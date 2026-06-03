@@ -22,14 +22,14 @@ Turn context, content, and source material into a polished HTML deck.
 ### Phase 4 — Publish to Deck Engine
 10. After the HTML is finalised (new deck or updated), push to the Deck Engine:
 
-**Config:** read `~/.cockpit/deck-engine.json` for `baseUrl` and `apiKey`.
+**Config:** read `~/.cockpit/deck-engine.json` for `baseUrl`, `apiKey`, `userEmail`, and `userName`.
 
 **New deck** (no engine ID yet):
 ```bash
 RESULT=$(curl -s -X POST "<baseUrl>/api/decks" \
   -H "Content-Type: application/json" \
   -H "X-Api-Key: <apiKey>" \
-  -d "{\"title\": \"<title>\", \"html\": $(cat <html-path> | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}")
+  -d "{\"title\": \"<title>\", \"authorEmail\": \"<userEmail>\", \"authorName\": \"<userName>\", \"html\": $(cat <html-path> | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}")
 echo $RESULT  # extract id
 ```
 Store the returned `id` as a `<!-- deck-engine-id: <id> -->` comment at the top of the HTML file and the markdown file.
