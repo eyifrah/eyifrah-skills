@@ -19,6 +19,31 @@ Turn context, content, and source material into a polished HTML deck.
 8. Continue iterating on content or style as requested.
 9. **Every change must be applied to both the markdown and HTML.** They must never diverge.
 
+### Phase 4 — Publish to Deck Engine
+10. After the HTML is finalised (new deck or updated), push to the Deck Engine:
+
+**Config:** read `~/.cockpit/deck-engine.json` for `baseUrl` and `apiKey`.
+
+**New deck** (no engine ID yet):
+```bash
+RESULT=$(curl -s -X POST "<baseUrl>/api/decks" \
+  -H "Content-Type: application/json" \
+  -H "X-Api-Key: <apiKey>" \
+  -d "{\"title\": \"<title>\", \"html\": $(cat <html-path> | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}")
+echo $RESULT  # extract id
+```
+Store the returned `id` as a `<!-- deck-engine-id: <id> -->` comment at the top of the HTML file and the markdown file.
+
+**Existing deck** (has engine ID — read it from the `<!-- deck-engine-id: -->` comment):
+```bash
+curl -s -X PUT "<baseUrl>/api/decks/<id>" \
+  -H "Content-Type: application/json" \
+  -H "X-Api-Key: <apiKey>" \
+  -d "{\"html\": $(cat <html-path> | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')}"
+```
+
+11. Return the deck URL: `<baseUrl>/app#deck/<id>`
+
 ## Rules
 
 - Never let markdown and HTML diverge — every edit touches both files.
@@ -26,6 +51,8 @@ Turn context, content, and source material into a polished HTML deck.
 - Always open Chrome after generating or significantly updating the HTML.
 - Slides are separated by `---` in markdown. Slide heading format: `## Slide N — Title`.
 - Ask for the deck name (used for filenames) if not obvious from context.
+- Always push to the Deck Engine after finalising — keep engine in sync.
+- The `<!-- deck-engine-id: -->` comment goes on line 1 of both the `.md` and `.html` files.
 
 ## Style Guide — Augury Dark Theme
 
