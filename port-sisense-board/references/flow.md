@@ -94,10 +94,13 @@ Add the board with its `VALIDATED` entry `false` (banner on), update
 live Sisense with the board's default filters. On sign-off: flip `VALIDATED[id]=true`, mark MANUAL ✅,
 redeploy.
 
-## Known deferrals / gaps to state, not hide
-- Status·Nodes: 3 "per-version over time" line charts not ported.
-- Status·EP: device-config-OTA widget omitted (mongo join null).
-- EPs Conn&Consumption: 9 exotic widgets deferred (cross-fact "% consumed samples",
-  `vw_ep_sample_consumption_error_type` + `fact_endpoints` breakdowns).
-- Nodes connection type: `network_type` pie ~4.5k vs Sisense 3.5k top bucket — under reconciliation.
-- EPs Only: source dashboard deleted — unportable.
+## Open gaps to state, not hide (as of 2026-07-29, most resolved)
+- **network_type pie** (Nodes connection type): ~20% above Sisense; cause unknown after exhausting
+  join/window permutations (sibling AP-SSID pies match exactly). Ships with an in-UI '⚠ doesn't match
+  Sisense' flag. Genuine collaborate-with-owner gap.
+- **EPs Only**: source dashboard deleted — unportable.
+- **Deliberate divergences** (labeled '≠ Sisense', by Alad's call): Status·EP fw/hw pies count each EP
+  once by CURRENT firmware (Sisense counts a mac in every version); device-config OTA resolved via each
+  EP's machine config (source's endpoint-level join is inherently null).
+- Resolved earlier deferrals: Status·Nodes per-version-over-time charts, Conn&Consumption exotic
+  widgets, device-config OTA — all now built.
