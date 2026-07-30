@@ -75,7 +75,15 @@ restarts halo-node — allow a couple minutes.
 
 ## If the node is unreachable over Tinc
 
-`ConnectTimeout`/no route usually means the node's Tinc hub is down or the node
-is Europe-only. See the `node-tinc-isnt-working` flow (bring up the EU hub
-`tinc-europe-west2-1`). Confirm the node is online first via BigQuery
-`latest_node_state` (`mqtt_connected`, `timestamp` freshness).
+`Network is unreachable` / `ConnectTimeout` usually means the node's own tinc is
+**off**. Fix, in order:
+
+1. **Enable the node's tinc via the admin R&D tool** (UpdateTincState / "enable
+   tinc", remote via cloud config). This is the usual fix — try it first.
+2. Only if that doesn't help: the node may be **Europe-only** with its EU hub's
+   `tincd` stopped — start `tinc@augury` on the hub VM `tinc-europe-west2-1`
+   (see the `node-tinc-isnt-working` flow).
+
+Either way the node may take a few minutes to (re)connect. Confirm it's actually
+online first via BigQuery `latest_node_state` (`mqtt_connected`, `timestamp`
+freshness) — tinc is separate from MQTT.
