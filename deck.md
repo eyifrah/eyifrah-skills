@@ -11,9 +11,9 @@ Turn context, content, and source material into a polished HTML deck.
 4. Iterate slide by slide with the user until the markdown is agreed.
 
 ### Phase 2 — Convert to HTML
-5. Once markdown is signed off, convert to an HTML deck using the Augury dark theme (see Style Guide below).
+5. Once markdown is signed off, convert to an HTML deck styled with the **Augury theme** (see Theme below).
 6. Save both files to `~/cockpit-data/specs/<deck-name>.md` and `~/cockpit-data/specs/<deck-name>.html`.
-7. Open the HTML in Chrome: `google-chrome <path> &`
+7. Honour the **slide markup contract** below — without it the engine's per-slide comments break.
 
 ### Phase 3 — HTML Iteration
 8. Continue iterating on content or style as requested.
@@ -48,30 +48,38 @@ curl -s -X PUT "<baseUrl>/api/decks/<id>" \
 
 - Never let markdown and HTML diverge — every edit touches both files.
 - Never show the raw HTML to the user — it's too noisy. Show the markdown for content review.
-- Always open Chrome after generating or significantly updating the HTML.
+- Never open the HTML in Chrome and never hand the user a local `.html` path. The Deck Engine URL is the only deliverable; the HTML file is just the publish payload.
 - Slides are separated by `---` in markdown. Slide heading format: `## Slide N — Title`.
 - Ask for the deck name (used for filenames) if not obvious from context.
 - Always push to the Deck Engine after finalising — keep engine in sync.
 - The `<!-- deck-engine-id: -->` comment goes on line 1 of both the `.md` and `.html` files.
 
-## Style Guide — Augury Dark Theme
+## Slide markup contract (required for engine features)
 
-```
-Background:    #0f1117
-Card:          #1a1d27  border: 1px solid #2a2d3a  border-radius: 12px
-Accent blue:   #5b6aff  (slide labels, dots, formula borders, → bullets)
-Accent purple: #a370f7  (All Communications / combo boxes)
-Text primary:  #ffffff / #e8eaf0
-Text secondary:#b0b8cc
-Text muted:    #666e88 / #555c75
-Table header:  #22263a
-Formula box:   background #12141e, left border 3px #5b6aff, monospace, color #a0c4ff
-Combo box:     background #1e1a2e, left border 3px #a370f7, color #c4b0e8
-Badges:        green (#1a3a2a / #4caf80), yellow (#3a2e1a / #e0a040)
-Navigation:    prev/next buttons + dot indicators + keyboard arrow support
-Font:          -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif
+The engine tracks the active slide so comments attach to the slide they were written on.
+It injects a tracker into every served deck that does this:
+
+```js
+var el = document.querySelector('.slide.active');
+return parseInt(el.id.replace('slide-','')) || 1;
 ```
 
-Slide label (top of each slide): small caps, #5b6aff, shows the deck title.
-Bullet lists use `→` in #5b6aff instead of default bullets.
-Sub-lists use `·` in #5b6aff.
+and it injects that script with `html.replace('</body>', …)`.
+
+So the HTML **must** satisfy both of these, or every comment silently files against slide 1:
+
+- Each slide carries `id="slide-N"`, 1-based and matching its position, alongside `class="slide"`. The visible one also has `active`; navigation toggles `active`.
+- The file contains a literal `</body>`. A fragment with no `</body>` gets no tracker injected at all.
+
+Verify after publishing: the stored HTML should have one `id="slide-N"` per slide and a `</body>`. Read it back with the `get_deck` MCP tool.
+
+## Theme — Augury (single source of truth)
+
+The deck's look comes entirely from the **`augury-deck-theme`** skill. Invoke it
+and use its palette tokens, ready-to-paste CSS block, and component styles
+verbatim — it owns every color, the card/formula/combo boxes, badges, table
+headers, fonts, and the `→`/`·` bullet convention.
+
+- Do not hardcode or invent colors — read them from `augury-deck-theme`.
+- If that skill is unavailable, stop and tell the user to install the
+  `augury-design` plugin (the theme lives there). Do not improvise a palette.
