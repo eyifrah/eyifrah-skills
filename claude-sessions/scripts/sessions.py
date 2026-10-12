@@ -97,16 +97,22 @@ def list_snapshot():
 def restore():
     data = load()
     running = {s["sessionId"] for s in live_sessions()}
+    # One gnome-terminal call: --window opens the first tab, each later --tab joins that window.
+    terminal_args = ["gnome-terminal"]
     for session in data["sessions"]:
         if session["sessionId"] in running:
             print(f"skip {session['name']}: already running")
             continue
         command = shlex.join(["claude", "--resume", session["sessionId"], *session["flags"]])
-        subprocess.Popen([
-            "gnome-terminal", "--tab", f"--working-directory={session['cwd']}",
-            "--", "bash", "-lc", f"{command}; exec bash",
-        ])
+        terminal_args += [
+            "--window" if len(terminal_args) == 1 else "--tab",
+            f"--title={session['name']}",
+            f"--working-directory={session['cwd']}",
+            "--command", shlex.join(["bash", "-lc", f"{command}; exec bash"]),
+        ]
         print(f"restored {session['name']} ({session['sessionId']}) in {session['cwd']}")
+    if len(terminal_args) > 1:
+        subprocess.Popen(terminal_args)
 
 
 def boot_restore():
