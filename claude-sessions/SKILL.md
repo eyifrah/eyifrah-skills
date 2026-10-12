@@ -25,5 +25,9 @@ survives and restore would reopen them.
 ~/.claude/skills/claude-sessions/scripts/sessions.py snapshot  # take a snapshot now
 ```
 
+At login, `~/.config/autostart/claude-sessions-restore.desktop` runs `sessions.py boot-restore`
+after 15s. It restores only when the snapshot is from a previous boot, so logging out and
+back in does not reopen anything. Output goes to `~/claude-sessions/restore.log`.
+
 `restore` skips sessions that are already running. Run `list` first and show the user
 what will be reopened before running `restore`.
