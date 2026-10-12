@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Restore Claude sessions
+Comment=Reopen the Claude Code sessions that were live before the last reboot
+Exec=sh -c "sleep 15 && /home/eyifrah/.claude/skills/claude-sessions/scripts/sessions.py boot-restore >> /home/eyifrah/claude-sessions/restore.log 2>&1"
+X-GNOME-Autostart-enabled=true
+NoDisplay=true

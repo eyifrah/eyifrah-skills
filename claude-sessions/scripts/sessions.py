@@ -3,7 +3,8 @@
 
   sessions.py snapshot   record live sessions to ~/claude-sessions/live.json (run by cron)
   sessions.py list       show the last snapshot
-  sessions.py restore    reopen each snapshot session in a gnome-terminal tab via `claude --resume`
+  sessions.py restore       reopen each snapshot session in a gnome-terminal tab via `claude --resume`
+  sessions.py boot-restore  restore, but only if the snapshot is from a previous boot (login autostart)
 """
 import json
 import os
@@ -108,7 +109,13 @@ def restore():
         print(f"restored {session['name']} ({session['sessionId']}) in {session['cwd']}")
 
 
-COMMANDS = {"snapshot": snapshot, "list": list_snapshot, "restore": restore}
+def boot_restore():
+    """Login autostart: restore only when the snapshot predates this boot, so re-logins don't reopen."""
+    if SNAPSHOT.exists() and load()["bootId"] != boot_id():
+        restore()
+
+
+COMMANDS = {"snapshot": snapshot, "list": list_snapshot, "restore": restore, "boot-restore": boot_restore}
 
 if __name__ == "__main__":
     if len(sys.argv) != 2 or sys.argv[1] not in COMMANDS:
