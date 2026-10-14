@@ -5,8 +5,14 @@ description: Check every IoT BI Platform board for unusual days, as of today or 
 
 # IoT BI Watch
 
-Code: `~/iot-bi-watch/` (fetch.py, detect.py, summary.py, publish_repo.py, run.sh, daily.sh). Runs land in
-`~/investigations/iot-bi-watch/<date>/` (raw/ = board JSON, flags.json = result).
+Code: `~/iot-bi-watch/` (browse.py, look.sh, detect.py, summary.py, publish_repo.py, run.sh, daily.sh). Runs land in
+`~/investigations/iot-bi-watch/<date>/`: raw/ = the JSON each board page received, shots/ = a picture of every chart,
+charts.json = where each series is drawn (board, chart title, legend line, link), visual.json = what Claude saw on
+screen, flags.json = the result.
+
+How it works: browse.py opens every board in headless Chromium (Playwright) with the user's gcloud token in the
+`X-Id-Token` header and the board's own default filters, rewound with `#<board>?from&to`. look.sh has Claude look at
+every chart picture. detect.py checks each of the last 3 days of every daily series against its previous 28 days.
 Report: https://github.com/augurysys/iot-bi-watch (README = latest run, reports/<date>.md = every run).
 Alerts: an issue in that repo when something is unusual; the user gets it in Slack through the GitHub app.
 The noon run is cron -> `daily.sh`, plain scripts, no Claude. This skill is for asking it things by hand.
@@ -20,8 +26,8 @@ The noon run is cron -> `daily.sh`, plain scripts, no Claude. This skill is for 
 
 ## Steps
 
-1. Run `/home/eyifrah/iot-bi-watch/run.sh [DATE]` (always this full path). It fetches all boards with the user's
-   gcloud login, flags unusual days and prints a JSON line `{flagged, title, body}` last. If gcloud is logged out the
+1. Run `/home/eyifrah/iot-bi-watch/run.sh [DATE]` (always this full path; takes about 10 minutes). It opens every
+   board, looks at the charts, flags unusual days and prints a JSON line `{flagged, title, body}` last. If gcloud is logged out the
    fetch fails: tell the user to run `! gcloud auth login`, and stop.
 2. Save it to the repo: `python3 /home/eyifrah/iot-bi-watch/publish_repo.py DATE` (add `--latest` only for today's
    date, so a past-date run never replaces the README). Open no issue: issues are the noon run's job.
@@ -29,7 +35,8 @@ The noon run is cron -> `daily.sh`, plain scripts, no Claude. This skill is for 
 
 ## Rules
 
-- Report numbers, the board, and the series key exactly as the detector gives them. Never guess what a series means,
+- Always point to where a person sees it: board > chart title > line, plus the board link. Report numbers exactly as
+  the detector gives them. Never guess what a series means,
   why it moved, or invent labels or thresholds. If the user asks why, look at the raw board JSON or the platform code
   (augurysys/vibe-apps-claude, apps/iot-bi-platform/server.js) and say what the data shows; if it doesn't show it,
   say so.
