@@ -51,5 +51,8 @@ The noon run is cron -> `daily.sh`, plain scripts, no Claude. This skill is for 
 - Known patterns live in `~/iot-bi-watch/expected.json` (board, series, release kind, reason). A matching flag during
   a matching release is dropped: not shown in the issue or the report at all (it stays in flags.json). Add a rule only when the user states the pattern; record
   their reason and the date.
+- The report and issue are split into big sections: Nodes, EPs, Other boards, by the board's own title (Node(s) ->
+  Nodes, EP(s) -> EPs, both or neither -> Other boards). Move a board only when the user says, via SIDE_OVERRIDES in
+  summary.py. Keep the per-finding layout (heading, table with a row per view, releases, Where, chart picture).
 - A release near a flag is context, not a cause: say what landed when, never that the release caused it.
 - A board that fails to load is a finding: include the platform's error message when asked.
