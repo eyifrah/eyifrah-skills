@@ -12,7 +12,10 @@ screen, flags.json = the result.
 
 How it works: browse.py opens every board in headless Chromium (Playwright) with the user's gcloud token in the
 `X-Id-Token` header and the board's own default filters, rewound with `#<board>?from&to`. look.sh has Claude look at
-every chart picture. detect.py checks each of the last 3 days of every daily series against its previous 28 days.
+every chart picture. releases.py reads when each node/EP firmware version reached each gradual-release channel
+(early_bird_il > early_bird > night_owl > pre_stable > stable) from `gs://augury-production-iot-gradual-release`
+(first appearance of the version's file); every flag lists releases from 3 days before it started to its last day,
+with their offset from the start. detect.py checks each of the last 3 days of every daily series against its previous 28 days.
 Report: https://github.com/augurysys/iot-bi-watch (README = latest run, reports/<date>.md = every run).
 Alerts: an issue in that repo when something is unusual; the user gets it in Slack through the GitHub app.
 The noon run is cron -> `daily.sh`, plain scripts, no Claude. This skill is for asking it things by hand.
@@ -42,4 +45,5 @@ The noon run is cron -> `daily.sh`, plain scripts, no Claude. This skill is for 
   say so.
 - The detector compares the last complete day with the previous 28 days. Tuning lives in the constants at the top of
   `detect.py`; change them only when the user asks.
+- A release near a flag is context, not a cause: say what landed when, never that the release caused it.
 - A board that fails to load is a finding: include the platform's error message when asked.
