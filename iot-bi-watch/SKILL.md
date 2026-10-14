@@ -45,5 +45,8 @@ The noon run is cron -> `daily.sh`, plain scripts, no Claude. This skill is for 
   say so.
 - The detector compares the last complete day with the previous 28 days. Tuning lives in the constants at the top of
   `detect.py`; change them only when the user asks.
+- Known patterns live in `~/iot-bi-watch/expected.json` (board, series, release kind, reason). A matching flag during
+  a matching release moves to Expected and does not count. Add a rule only when the user states the pattern; record
+  their reason and the date.
 - A release near a flag is context, not a cause: say what landed when, never that the release caused it.
 - A board that fails to load is a finding: include the platform's error message when asked.
