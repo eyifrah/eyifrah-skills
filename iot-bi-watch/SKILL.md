@@ -11,7 +11,10 @@ charts.json = where each series is drawn (board, chart title, legend line, link)
 screen, flags.json = the result.
 
 How it works: browse.py opens every board in headless Chromium (Playwright) with the user's gcloud token in the
-`X-Id-Token` header and the board's own default filters, rewound with `#<board>?from&to`. look.sh has Claude look at
+`X-Id-Token` header and the board's own default filters, rewound with `#<board>?from&to`, and again per Node type (`&nodeTypes=Cassia|Node2|ULRPM`) on every board
+that has that filter. Findings are grouped per board > chart > line, listing each view (All, Node type: X) that is out
+of range; views identical to All are dropped (the filter doesn't affect that chart); identical numbers on several
+boards are one finding with "also on". Visual notes skip empty charts in Node type views and the window's first day. look.sh has Claude look at
 every chart picture. releases.py reads when each node/EP firmware version reached each gradual-release channel
 (early_bird_il > early_bird > night_owl > pre_stable > stable) from `gs://augury-production-iot-gradual-release`
 (first appearance of the version's file); every flag lists releases from 3 days before it started to its last day,
