@@ -5,7 +5,7 @@ description: Check every IoT BI Platform board for unusual days, as of today or 
 
 # IoT BI Watch
 
-Code: `~/iot-bi-watch/` (browse.py, look.sh, detect.py, research.py, summary.py, publish_repo.py, run.sh, daily.sh, catchup.sh). Runs land in
+Code: `~/iot-bi-watch/` (browse.py, look.sh, detect.py, research.py, watch.py (watch list: watchlist.json), summary.py, publish_repo.py, run.sh, daily.sh, catchup.sh). Runs land in
 `~/investigations/iot-bi-watch/<date>/`: raw/ = the JSON each board page received, shots/ = a picture of every chart,
 charts.json = where each series is drawn (board, chart title, legend line, link), visual.json = what Claude saw on
 screen, flags.json = the result.
