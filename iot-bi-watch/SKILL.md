@@ -5,7 +5,7 @@ description: Check every IoT BI Platform board for unusual days, as of today or 
 
 # IoT BI Watch
 
-Code: `~/iot-bi-watch/` (browse.py, look.sh, detect.py, summary.py, publish_repo.py, run.sh, daily.sh). Runs land in
+Code: `~/iot-bi-watch/` (browse.py, look.sh, detect.py, research.py, summary.py, publish_repo.py, run.sh, daily.sh, catchup.sh). Runs land in
 `~/investigations/iot-bi-watch/<date>/`: raw/ = the JSON each board page received, shots/ = a picture of every chart,
 charts.json = where each series is drawn (board, chart title, legend line, link), visual.json = what Claude saw on
 screen, flags.json = the result.
@@ -18,7 +18,7 @@ boards are one finding with "also on". Visual notes skip empty charts in Node ty
 every chart picture. releases.py reads when each node/EP firmware version reached each gradual-release channel
 (early_bird_il > early_bird > night_owl > pre_stable > stable) from `gs://augury-production-iot-gradual-release`
 (first appearance of the version's file); every flag lists releases from 3 days before it started to its last day,
-with their offset from the start. detect.py checks each of the last 3 days of every daily series against its previous 28 days.
+with their offset from the start. detect.py checks each of the last 3 days of every daily series against its previous 28 days. research.py adds a 50-word BigQuery "Research:" line (nodes, sites, timing) to Offline Nodes findings.
 Report: https://github.com/augurysys/iot-bi-watch (README = latest run, reports/<date>.md = every run).
 Alerts: an issue in that repo when something is unusual; the user gets it in Slack through the GitHub app.
 The daily run is cron (every 15 min from 10:00) -> `catchup.sh` -> `daily.sh` once a day, plain scripts, no Claude. This skill is for asking it things by hand.
