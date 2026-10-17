@@ -5,7 +5,7 @@ description: Check every IoT BI Platform board for unusual days, as of today or 
 
 # IoT BI Watch
 
-Code: `~/iot-bi-watch/` (browse.py, look.sh, detect.py, research.py, watch.py (watch list: watchlist.json), summary.py, publish_repo.py, run.sh, daily.sh, catchup.sh). Runs land in
+Code: `~/iot-bi-watch/report-repo/agent/` (the repo augurysys/iot-bi-watch; browse.py, look.sh, detect.py, research.py, watch.py (watch list: watchlist.json), summary.py, publish_repo.py, run.sh, daily.sh, catchup.sh). Runs land in
 `~/investigations/iot-bi-watch/<date>/`: raw/ = the JSON each board page received, shots/ = a picture of every chart,
 charts.json = where each series is drawn (board, chart title, legend line, link), visual.json = what Claude saw on
 screen, flags.json = the result.
@@ -32,7 +32,7 @@ The daily run is cron (every 15 min from 10:00) -> `catchup.sh` -> `daily.sh` on
 
 ## Steps
 
-1. Run `/home/eyifrah/iot-bi-watch/run.sh [DATE]` (always this full path; takes about 10 minutes). It opens every
+1. Run `/home/eyifrah/iot-bi-watch/report-repo/agent/run.sh [DATE]` (always this full path; takes about 10 minutes). It opens every
    board, looks at the charts, flags unusual days and prints a JSON line `{flagged, title, body}` last. If gcloud is logged out the
    fetch fails: tell the user to run `! gcloud auth login`, and stop.
 2. Save it to the repo: `python3 /home/eyifrah/iot-bi-watch/publish_repo.py DATE` (add `--latest` only for today's
@@ -48,7 +48,7 @@ The daily run is cron (every 15 min from 10:00) -> `catchup.sh` -> `daily.sh` on
   say so.
 - The detector compares the last complete day with the previous 28 days. Tuning lives in the constants at the top of
   `detect.py`; change them only when the user asks.
-- Known patterns live in `~/iot-bi-watch/expected.json` (board, series, release kind, reason). A matching flag during
+- Known patterns live in `~/iot-bi-watch/report-repo/agent/expected.json` (board, series, release kind, reason). A matching flag during
   a matching release is dropped: not shown in the issue or the report at all (it stays in flags.json). Add a rule only when the user states the pattern; record
   their reason and the date.
 - The report and issue are split into big sections: Nodes, EPs, Other boards, by the board's own title (Node(s) ->
