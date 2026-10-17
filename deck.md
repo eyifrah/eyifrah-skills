@@ -56,22 +56,29 @@ curl -s -X PUT "<baseUrl>/api/decks/<id>" \
 
 ## Slide markup contract (required for engine features)
 
-The engine tracks the active slide so comments attach to the slide they were written on.
-It injects a tracker into every served deck that does this:
+The engine injects a slide tracker into every served deck so that comments attach to the
+slide they were written on. It finds the active slide by **position**: the 1-based index of
+the element carrying `.active` among all `.slide` elements, falling back to the on-screen
+slide and only then to a `slide-N` id.
+
+The injection is done with:
 
 ```js
-var el = document.querySelector('.slide.active');
-return parseInt(el.id.replace('slide-','')) || 1;
+html = html.replace('</body>', injection + '</body>');
 ```
 
-and it injects that script with `html.replace('</body>', …)`.
+So the one hard requirement is:
 
-So the HTML **must** satisfy both of these, or every comment silently files against slide 1:
+- **The HTML must contain a literal `</body>`.** A fragment without it gets no tracker at
+  all, the app never receives a `deckSlideChange`, and every comment silently files against
+  slide 1.
 
-- Each slide carries `id="slide-N"`, 1-based and matching its position, alongside `class="slide"`. The visible one also has `active`; navigation toggles `active`.
-- The file contains a literal `</body>`. A fragment with no `</body>` gets no tracker injected at all.
+Beyond that: each slide is an element with class `slide`, exactly one carries `active` at a
+time, and slides sit in DOM order. `id="slide-N"` is useful for the nav snippet but is not
+what comment tracking depends on.
 
-Verify after publishing: the stored HTML should have one `id="slide-N"` per slide and a `</body>`. Read it back with the `get_deck` MCP tool.
+Verify after publishing: read the deck back with the `get_deck` MCP tool and confirm the
+stored HTML ends with `</body>`.
 
 ## Theme — Augury (single source of truth)
 
