@@ -1,6 +1,6 @@
 ---
 name: iot-bi-watch
-description: Check every IoT BI Platform board for unusual days, as of today or as of a past date. Use when the user says /iot-bi-watch, asks what is unusual on the IoT BI platform, asks to "run the BI watch" (optionally "as of <date>" / "up to <date>"), or asks a follow-up about a bi-watch report. Also runs unattended every day from 10:00 via cron (catch-up every 15 min).
+description: Check every IoT BI Platform board for unusual days, as of today or as of a past date. Use when the user says /iot-bi-watch, asks what is unusual on the IoT BI platform, asks to "run the BI watch" (optionally "as of <date>" / "up to <date>"), or asks a follow-up about a bi-watch report. Also runs unattended every day at 07:00 UTC on GitHub Actions (augurysys/iot-bi-watch, daily.yml).
 ---
 
 # IoT BI Watch
@@ -21,7 +21,7 @@ every chart picture. releases.py reads when each node/EP firmware version reache
 with their offset from the start. detect.py checks each of the last 3 days of every daily series against its previous 28 days. research.py adds a 50-word BigQuery "Research:" line (nodes, sites, timing) to Offline Nodes findings.
 Report: https://github.com/augurysys/iot-bi-watch (README = latest run, reports/<date>.md = every run).
 Alerts: an issue in that repo when something is unusual; the user gets it in Slack through the GitHub app.
-The daily run is cron (every 15 min from 10:00) -> `catchup.sh` -> `daily.sh` once a day, plain scripts, no Claude. This skill is for asking it things by hand.
+The daily run is GitHub Actions (daily.yml, 07:00 UTC) -> `agent/daily.sh`; manual: `gh workflow run daily.yml -R augurysys/iot-bi-watch -f date=YYYY-MM-DD [-f dry_run=true]`, run data via `gh run download`, plain scripts, no Claude. This skill is for asking it things by hand.
 
 ## Arguments
 
