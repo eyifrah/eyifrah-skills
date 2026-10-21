@@ -55,9 +55,8 @@ Bool-ish columns may be BOOL or 'true'/'false' strings → `SAFE_CAST(col AS BOO
 
 ## 5. Build — private/app.html
 - `DASHBOARDS[]` (sidebar; drop `soon:true` to enable), `BOARDS{}` (`{id:{title,endpoint,defaultDays,
-  render}}`), `VALIDATED{}` (`id:false`). `__switchBoard` sets title, resets `filters.days` to the
-  board default, reloads. `__load` fetches `BOARDS[activeBoard].endpoint`, calls its `render`, and
-  toggles `#unval` via `!VALIDATED[activeBoard]`.
+  render}}`). `__switchBoard` sets title, resets `filters.days` to the
+  board default, reloads. `__load` fetches `BOARDS[activeBoard].endpoint` and calls its `render`.
 - `render<Board>Grid(d)` builds `#grid` innerHTML from `indicator(...)` / `chartWidget(...)` cells
   (12-col), then `charts.push(...)` with the draw helpers:
   `drawMulti(id,days,series,yFmt,tipFmt)` (bar/line, multi-series), `drawPie(id,[{name,value}])` (donut),
@@ -89,10 +88,8 @@ become **302** (auth redirect = route exists). A **200** means it hit the catch-
 deployed yet. `/` returns 200 (login) and its `<title>` confirms the app is up.
 
 ## 9. Hand off
-Add the board with its `VALIDATED` entry `false` (banner on), update
-`~/cockpit-data/specs/iot-bi-platform-validation-state.md`, and prompt the user to eyeball it against
-live Sisense with the board's default filters. On sign-off: flip `VALIDATED[id]=true`, mark MANUAL ✅,
-redeploy.
+Tell the user the board is live and list any gaps you could not reconcile. There is no sign-off step
+or banner any more (removed 2026-10-21, PR #477).
 
 ## Open gaps to state, not hide (as of 2026-07-29, most resolved)
 - **network_type pie** (Nodes connection type): ~20% above Sisense; cause unknown after exhausting

@@ -5,8 +5,8 @@ description: >-
   (augurysys/vibe-apps-claude, apps/iot-bi-platform). Use whenever the user wants to add,
   reproduce, migrate, or "port" a Sisense board to the platform, replace a Sisense OTA/FW
   dashboard, or fix/validate a ported board. Wraps the full reproduce → validate → build →
-  deploy → manual-sign-off flow and every hard-won nuance (filter traps, drift, latest-snapshot
-  tables, DUPCOUNT semantics, the not-validated banner).
+  deploy flow and every hard-won nuance (filter traps, drift, latest-snapshot
+  tables, DUPCOUNT semantics).
 ---
 
 # Port a Sisense board to the IoT BI Platform
@@ -34,8 +34,8 @@ eyeballs it against live Sisense (the auto JAQL-vs-BQ check is necessary, not su
 5. **Build** the server endpoint + frontend view (patterns below).
 6. **Render-test** the frontend headless (0 JS errors, charts drawn).
 7. **Deploy** (branch → PR → squash-merge), then **verify the new route is live** (302, not 200).
-8. **Add the board unvalidated** (banner on) and **prompt the user to manually validate**. Record in
-   `~/cockpit-data/specs/iot-bi-platform-validation-state.md`.
+8. **Tell the user the board is live**, with any gaps you could not reconcile. No sign-off step or
+   banner (removed 2026-10-21, PR #477).
 
 Read `references/flow.md` for the exact API calls, SQL scaffolds, and deploy commands.
 
@@ -71,13 +71,6 @@ Read `references/flow.md` for the exact API calls, SQL scaffolds, and deploy com
 - **Cost:** bill jobs to `bi-production-336411`, cross-project read `production-02cb28ec`; label jobs
   `{app: 'iot-bi-platform'}`; cost is incurred only on cache miss. Combine per-scan measures with
   `GROUP BY GROUPING SETS` to avoid re-scanning big facts (endpoint_connections/downstream are huge).
-
-## The "not manually validated" banner
-Every board renders an amber banner until signed off. Mechanism: a `VALIDATED` map in `app.html`
-(`{'<board-id>': false, …}`) and an `#unval` strip toggled in `__load` via
-`uv.classList.toggle('show', !VALIDATED[activeBoard])`. **New boards ship with their entry `false`.**
-On the user's manual sign-off: flip that entry to `true`, flip MANUAL ✅ in the validation-state doc,
-redeploy — the banner disappears for that board only. Never pre-flip it yourself.
 
 ## Token & auth
 Sisense token at `~/.sisense.token` — **KEEP, never delete** (user directive). Sisense needs a browser
